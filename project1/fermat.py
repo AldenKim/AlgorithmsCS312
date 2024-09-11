@@ -16,8 +16,8 @@ def mod_exp(x: int, y: int, N: int) -> int:
     z = mod_exp(x, math.floor(y/2), N)
     if y % 2 == 0:
         return (z**2) % N
-    else:
-        return x * (z**2) % N
+
+    return x * (z**2) % N
 
 # You will need to implement this function and change the return value.
 def fprobability(k: int) -> float:
@@ -36,7 +36,7 @@ def mprobability(k: int) -> float:
 # random.randint(low, hi) which gives a random integer between low and
 # hi, inclusive.
 def fermat(N: int, k: int) -> str:
-    return "???"
+    
 
 
 # You will need to implement this function and change the return value, which should be
