@@ -1,7 +1,5 @@
 import argparse
 import random
-import math
-
 
 # This is a convenience function for main(). You don't need to touch it.
 def prime_test(N: int, k: int) -> tuple[str, str]:
@@ -13,10 +11,9 @@ def mod_exp(x: int, y: int, N: int) -> int:
     if y == 0:
         return 1
 
-    z = mod_exp(x, math.floor(y/2), N)
+    z = mod_exp(x, y//2, N)
     if y % 2 == 0:
         return (z**2) % N
-
     return x * (z**2) % N
 
 # You will need to implement this function and change the return value.
@@ -36,16 +33,10 @@ def mprobability(k: int) -> float:
 # random.randint(low, hi) which gives a random integer between low and
 # hi, inclusive.
 def fermat(N: int, k: int) -> str:
-    k_nums = list()
-
     for i in range(k):
-        k_nums.append(random.randint(1, N-1))
-
-    for a in range(len(k_nums)):
-        if(mod_exp(k_nums[a],N-1, N) != 1):
-            return "composite"
-    
-    return "prime"
+        if(mod_exp(random.randint(1,N-1),N-1, N) != 1):
+            return 'composite'
+    return 'prime'
     
 
 # You will need to implement this function and change the return value, which should be
