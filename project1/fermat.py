@@ -7,6 +7,10 @@ def prime_test(N: int, k: int) -> tuple[str, str]:
 
 
 # You will need to implement this function and change the return value.
+
+"""""""""
+Big O would be O(log(y)) since y is halved for each recursive call.
+"""""""""
 def mod_exp(x: int, y: int, N: int) -> int:
     if y == 0:
         return 1
@@ -18,12 +22,12 @@ def mod_exp(x: int, y: int, N: int) -> int:
 
 # You will need to implement this function and change the return value.
 def fprobability(k: int) -> float:
-    return 0
+    return 1 - (1 / (2 ** k))
 
 
 # You will need to implement this function and change the return value.
 def mprobability(k: int) -> float:
-    return 0
+    return  1 - (1 / (4**k))
 
 
 # You will need to implement this function and change the return value, which should be
@@ -32,6 +36,9 @@ def mprobability(k: int) -> float:
 # To generate random values for a, you will most likely want to use
 # random.randint(low, hi) which gives a random integer between low and
 # hi, inclusive.
+"""""""""""
+Big O would be O(k * log(N-1)), we iterate through k different numbers, and log(N-1) for each call to mod_exp
+"""""""""""
 def fermat(N: int, k: int) -> str:
     for i in range(k):
         if(mod_exp(random.randint(1,N-1),N-1, N) != 1):
@@ -46,8 +53,28 @@ def fermat(N: int, k: int) -> str:
 # random.randint(low, hi) which gives a random integer between low and
 # hi, inclusive.
 def miller_rabin(N: int, k: int) -> str:
-    return "???"
+    t = 0
+    u = N-1
 
+    while(u % 2 == 0):
+        u//=2
+        t+=1
+
+    for i in range(k):
+        a = random.randint(1 , N-1)
+
+        x = mod_exp(a, u, N)
+
+        if x == 1 or x == N-1:
+            continue
+            
+        for j in range(t-1):
+            x = mod_exp(x, 2, N)
+            if(x == N-1):
+                break
+        else:
+            return "composite"
+    return "prime"
 
 def main(number: int, k: int):
     fermat_call, miller_rabin_call = prime_test(number, k)

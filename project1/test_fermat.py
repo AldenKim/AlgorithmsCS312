@@ -60,5 +60,5 @@ def test_composites_miller_rabin() -> None:
     """This function tests multiple known composite numbers to verify that your
     miller_rabin primality tests return 'composite'"""
     for N in composite_args:
-        call = fermat(N, 100)
+        call = miller_rabin(N, 100)
         assert call == "composite"
