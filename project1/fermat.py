@@ -1,5 +1,6 @@
 import argparse
 import random
+import math
 
 
 # This is a convenience function for main(). You don't need to touch it.
@@ -9,8 +10,14 @@ def prime_test(N: int, k: int) -> tuple[str, str]:
 
 # You will need to implement this function and change the return value.
 def mod_exp(x: int, y: int, N: int) -> int:
-    return 0
+    if y == 0:
+        return 1
 
+    z = mod_exp(x, math.floor(y/2), N)
+    if y % 2 == 0:
+        return (z**2) % N
+    else:
+        return x * (z**2) % N
 
 # You will need to implement this function and change the return value.
 def fprobability(k: int) -> float:
