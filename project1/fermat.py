@@ -9,7 +9,7 @@ def prime_test(N: int, k: int) -> tuple[str, str]:
 # You will need to implement this function and change the return value.
 
 """""""""
-Big O would be O(log(y)) since y is halved for each recursive call.
+Big O would be O(n^3) since y is halved for each recursive call.
 """""""""
 def mod_exp(x: int, y: int, N: int) -> int:
     if y == 0:
@@ -37,7 +37,7 @@ def mprobability(k: int) -> float:
 # random.randint(low, hi) which gives a random integer between low and
 # hi, inclusive.
 """""""""""
-Big O would be O(k * log(N-1)), we iterate through k different numbers, and log(N-1) for each call to mod_exp
+Big O would be O(k * n^3), we iterate through k different numbers, and log(N-1) for each call to mod_exp
 """""""""""
 def fermat(N: int, k: int) -> str:
     for i in range(k):
