@@ -51,4 +51,14 @@ def generate_key_pairs(bits: int) -> tuple[int, int, int]:
     - N must be the product of two random prime numbers p and q
     - e and d must be multiplicative inverses mod (p-1)(q-1)
     """
-    return 0, 0, 0
+    p = generate_large_prime(bits)
+    q = generate_large_prime(bits)
+
+    N = p * q
+
+    helper = (p-1) * (q-1)
+
+    for e in primes:# use euclid's here
+        _, _, gcd = ext_euclid(e, helper)
+
+    return N, 0, 0
