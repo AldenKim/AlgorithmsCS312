@@ -27,7 +27,12 @@ def ext_euclid(a: int, b: int) -> tuple[int, int, int]:
 
     Note: a must be greater than b
     """
-    return 0, 0, 0
+    if b == 0:
+        return 1, 0, a
+
+    x_prime, y_prime, d = ext_euclid(b, a % b)
+
+    return y_prime, (x_prime - (a//b) * y_prime), d
 
 
 # Implement this function
