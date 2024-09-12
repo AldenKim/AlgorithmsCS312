@@ -63,7 +63,16 @@ def generate_key_pairs(bits: int) -> tuple[int, int, int]:
 
     helper = (p-1) * (q-1)
 
-    for e in primes:# use euclid's here
-        _, _, gcd = ext_euclid(e, helper)
+    e = 0
+    d = 0
+    for prime in primes:# use euclid's here
+        gcd = ext_euclid(prime, helper)
+        if gcd[2] == 1:
+            e = prime
+            d = gcd[0]
+            break
 
-    return N, 0, 0
+    if d < 0:
+        d += helper
+
+    return N, e, d
