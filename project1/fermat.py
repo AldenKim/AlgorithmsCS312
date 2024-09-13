@@ -69,8 +69,8 @@ def miller_rabin(N: int, k: int) -> str:
             continue
             
         for j in range(t-1):
-            x = mod_exp(x, 2, N)
-            if(x == N-1):
+            x = (x**2) % N
+            if x == N-1:
                 break
         else:
             return "composite"
