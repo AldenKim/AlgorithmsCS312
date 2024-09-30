@@ -112,8 +112,15 @@ def brute_force_points(points: list[tuple[float, float]]):
     return list(hull)
 
 #helper function1 for tangent
-def cross_product(p1: tuple[float, float], p2: tuple[float, float], p3: tuple[float, float]):
-    return (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0])
+def slope(p1: tuple[float, float], p2: tuple[float, float]):
+    x1, y1 = p1
+    x2, y2 = p2
+
+    if x1 == x2:
+        return None
+
+    m = (y2 - y1) / (x2 - x1)
+    return m
 
 #helper function2 for tangent
 def right_most(left: DoublyLinkedList):
@@ -143,12 +150,12 @@ def find_upper_tangent(left: DoublyLinkedList, right: DoublyLinkedList):
     while not done:
         done = 1
 
-        while cross_product(p.point, q.point, p.prev.point) > 0:
+        while slope(p.point, q.point) > slope(p.prev.point, q.point):
             p = p.prev
             done = False
             #plot.draw_line(p.point, q.point, color="red")
 
-        while cross_product(q.point, p.point, q.next.point) < 0:
+        while slope(q.point, p.point) < slope(q.next.point, p.point):
             q = q.next
             done = False
             #plot.draw_line(p.point, q.point, color="red")
@@ -164,12 +171,12 @@ def find_lower_tangent(left: DoublyLinkedList, right: DoublyLinkedList):
     while not done:
         done = 1
 
-        while cross_product(p.point, q.point, p.next.point) < 0:
+        while slope(p.point, q.point) < slope(p.next.point, q.point):
             p = p.next
             done = False
             #plot.draw_line(p.point, q.point, color="red")
         
-        while cross_product(q.point, p.point, q.prev.point) > 0:
+        while slope(q.point, p.point) > slope(q.prev .point, p.point):
             q = q.prev
             done = False
             #plot.draw_line(p.point, q.point, color="red")
@@ -203,17 +210,6 @@ def merge(left: DoublyLinkedList, right: DoublyLinkedList):
     mergedLinkedList.insert(current.point)
 
     return mergedLinkedList.convert_to_list()
-
-#Helpers to help sort by clockwise depending on left most point
-def slope(p1: tuple[float, float], p2: tuple[float, float]):
-    x1, y1 = p1
-    x2, y2 = p2
-
-    if x1 == x2:
-        return None
-
-    m = (y2 - y1) / (x2 - x1)
-    return m
 
 def helper(left_most_point: tuple[float, float], point: tuple[float, float]):
     sl = slope(left_most_point, point)
@@ -270,5 +266,4 @@ def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]
         right.insert(point)
 
     #merging/tangent stuff
-    merged = merge(left, right)
-    return merged
+    return merge(left, right)
