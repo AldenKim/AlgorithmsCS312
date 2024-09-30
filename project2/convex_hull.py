@@ -1,6 +1,8 @@
 # Uncomment this line to import some functions that can help
 # you debug your algorithm
 # from plotting import draw_line, draw_hull, circle_point
+import sys
+
 import plotting as plot
 
 #Code for our data structure
@@ -237,13 +239,25 @@ def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]
     left_points = compute_hull(points[:mid])
     right_points = compute_hull(points[mid:])
 
-    left_points.sort()
-    right_points.sort()
+    left_min = sys.maxsize
+    right_min = sys.maxsize
+    left_min_i = 0
+    right_min_i = 0
+
+    for i in range(len(left_points)):
+        if left_points[i][0] < left_min:
+            left_min = left_points[i][0]
+            left_min_i = i
+
+    for i in range(len(right_points)):
+        if right_points[i][0] < right_min:
+            right_min = right_points[i][0]
+            right_min_i = i
 
     #sort left_points by clockwise order
-    left_points = sort_by_slope(left_points[0], left_points)
+    left_points = sort_by_slope(left_points[left_min_i], left_points)
     #sort right_points by clockwise order
-    right_points = sort_by_slope(right_points[0], right_points)
+    right_points = sort_by_slope(right_points[right_min_i], right_points)
 
     left = DoublyLinkedList()
     right = DoublyLinkedList()
@@ -257,6 +271,4 @@ def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]
 
     #merging/tangent stuff
     merged = merge(left, right)
-    merged.sort()
-    merged = sort_by_slope(merged[0], merged)
     return merged
