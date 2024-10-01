@@ -2,9 +2,7 @@
 # you debug your algorithm
 # from plotting import draw_line, draw_hull, circle_point
 import sys
-
 import plotting as plot
-
 #Code for our data structure
 class Node:
     def __init__(self, point: tuple[float, float]):
@@ -109,7 +107,10 @@ def brute_force_points(points: list[tuple[float, float]]):
                 hull.add(p1)
                 hull.add(p2)
 
-    return list(hull)
+    temp = list(hull)
+    temp_min = min(temp)
+    temp = sort_by_slope(temp_min, temp)
+    return temp
 
 #helper function1 for tangent
 def slope(p1: tuple[float, float], p2: tuple[float, float]):
@@ -180,7 +181,7 @@ def find_lower_tangent(left: DoublyLinkedList, right: DoublyLinkedList):
             q = q.prev
             done = False
             #plot.draw_line(p.point, q.point, color="red")
-        
+
     return p.point, q.point
 
 def merge(left: DoublyLinkedList, right: DoublyLinkedList):
@@ -192,9 +193,6 @@ def merge(left: DoublyLinkedList, right: DoublyLinkedList):
     mergedLinkedList = DoublyLinkedList()
 
     current = left.head
-    while current.point != p2:
-        current = current.next
-
     while current.point != p1:
         mergedLinkedList.insert(current.point)
         current = current.next
@@ -208,6 +206,14 @@ def merge(left: DoublyLinkedList, right: DoublyLinkedList):
         mergedLinkedList.insert(current.point)
         current = current.next
     mergedLinkedList.insert(current.point)
+
+    current = left.head
+    while current.point != p2:
+        current = current.next
+
+    while current.point != left.head.point:
+        mergedLinkedList.insert(current.point)
+        current = current.next
 
     return mergedLinkedList.convert_to_list()
 
@@ -234,26 +240,6 @@ def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]
     mid = len(points) // 2
     left_points = compute_hull(points[:mid])
     right_points = compute_hull(points[mid:])
-
-    left_min = sys.maxsize
-    right_min = sys.maxsize
-    left_min_i = 0
-    right_min_i = 0
-
-    for i in range(len(left_points)):
-        if left_points[i][0] < left_min:
-            left_min = left_points[i][0]
-            left_min_i = i
-
-    for i in range(len(right_points)):
-        if right_points[i][0] < right_min:
-            right_min = right_points[i][0]
-            right_min_i = i
-
-    #sort left_points by clockwise order
-    left_points = sort_by_slope(left_points[left_min_i], left_points)
-    #sort right_points by clockwise order
-    right_points = sort_by_slope(right_points[right_min_i], right_points)
 
     left = DoublyLinkedList()
     right = DoublyLinkedList()
