@@ -1,14 +1,51 @@
 import argparse
+import numpy as np
 from time import time
 
 from generate import generate_random_points
 from convex_hull import compute_hull
-from plotting import plot_points, draw_hull, title, show_plot
+from plotting import plot_points, draw_hull, title, show_plot, draw_line
 
 
 def main(n: int, distribution: str, seed: int | None):
+
     points = generate_random_points(distribution, n, seed)
     plot_points(points)
+
+    """seconds = [(10.0, 0.0), (100.0, 0.0014), (1000.0, 0.01694), (10000.0, 0.13128), (100000.0, 1.2253399999999999)
+               , (500000.0, 6.708499999999999), (1000000.0, 13.96312)]
+    n_values = [point[0] for point in seconds]
+    t_values = [point[1] for point in seconds]
+
+    def helper(nVal, kVal):
+        nVal = np.array(nVal)
+        return kVal*(nVal * np.log(nVal))
+
+    best_k = 0.00000101
+
+    plt.figure()
+    print("k val " + str(best_k))
+    plt.plot(n_values, t_values, marker='o', linestyle='-')
+    plt.plot(n_values, helper(n_values, best_k), marker = 'x', linestyle='--', label=f'Fitted O(n log n), k={best_k:.5f}')
+
+    plt.xscale('log')
+
+    plt.xlabel('n ')
+    plt.ylabel('Time (seconds)')
+
+    plt.title('Analysis')
+
+    plt.show(block = True)"""
+
+    """helper = 0
+    for i in range(5):
+        start = time()
+        hull_points = compute_hull(points)
+        end = time()
+        print (str(i+1) + ". " + str(round(end - start, 4)) + " seconds")
+        helper += round(end - start, 4)
+
+    print("Average: " + str(helper / 5) + " seconds")"""
 
     start = time()
     hull_points = compute_hull(points)

@@ -225,18 +225,11 @@ def sort_by_slope(left_most_point: tuple[float, float], points: list[tuple[float
     sorted_points = sorted(points, key=lambda k: helper(left_most_point, k), reverse=True)
     return sorted_points
 
-#Actual function
-def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
-    """Return the subset of provided points that define the convex hull"""
-    #base case
+def compute_hull_dc(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
     if len(points) <= 3:
         #brute force it
         return brute_force_points(points)
 
-    #Greater than three points, do below
-    points.sort()
-
-    #Split into 2 sub problems, find convex hull of left half and right half
     mid = len(points) // 2
     left_points = compute_hull(points[:mid])
     right_points = compute_hull(points[mid:])
@@ -244,12 +237,19 @@ def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]
     left = DoublyLinkedList()
     right = DoublyLinkedList()
 
-    #Using new data structure to help us
+    # Using new data structure to help us
     for point in left_points:
         left.insert(point)
 
     for point in right_points:
         right.insert(point)
 
-    #merging/tangent stuff
+    # merging/tangent stuff
     return merge(left, right)
+
+#Actual function
+def compute_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Return the subset of provided points that define the convex hull"""
+    #Greater than three points, do below
+    points.sort()
+    return compute_hull_dc(points)
