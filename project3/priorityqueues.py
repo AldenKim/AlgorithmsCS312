@@ -25,7 +25,7 @@ class HeapPQ:
     def __init__(self, distances):
         self.heap_tree = []
         for i in range(len(distances)):
-            self.heap_tree.append((distances[i], i))
+            self.heap_tree.append((i, distances[i]))
 
         self.find_items = {}
         for i in range(len(distances)):
@@ -39,27 +39,45 @@ class HeapPQ:
         return True
 
     def pop_min(self):
-        current_min = self.heap_tree[0][1]
-        del self.find_items[current_min]
-
+        current_min = self.heap_tree[0][0]
         self.swap(0,-1)
+
         del self.heap_tree[-1]
+        del self.find_items[current_min]
 
         #percolate downward
 
         return current_min
 
-    def update_priority(self, key,new_priority):
+    def update_priority(self, key, new_priority):
         i = self.find_items[key]
+
+        curr_priority = self.heap_tree[i][1]
+
+        self.heap_tree[i] = (key, new_priority)
+
+        if curr_priority > new_priority:
+            #percolate upward
+            return
+        else:
+            #percolate downward
+            return
+
+    def insert(self, key, new_priority):
+        self.find_items[key] = len(self.heap_tree)
+
+        self.heap_tree.append((key, new_priority))
+
+        #percolate up
 
 
     def swap(self, first, second):
-        item1 = self.heap_tree[first][1]
-        item2 = self.heap_tree[second][1]
+        item1 = self.heap_tree[first][0]
+        item2 = self.heap_tree[second][0]
 
-        one = self.find_items[item1]
-        two = self.find_items[item2]
+        self.find_items[item1] = second
+        self.find_items[item2] = first
 
-        temp = self.heap_tree[one]
-        self.heap_tree[one] = self.heap_tree[two]
-        self.heap_tree[two] = temp
+        temp = self.heap_tree[first]
+        self.heap_tree[first] = self.heap_tree[second]
+        self.heap_tree[second] = temp
