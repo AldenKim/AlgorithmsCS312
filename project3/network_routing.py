@@ -14,6 +14,16 @@ def find_shortest_path_with_heap(
         - the list of nodes (including `source` and `target`)
         - the cost of the path
     """
+    dist = []
+    prev = []
+    for i in range(len(graph)):
+        dist.append(INF)
+        prev.append(None)
+    dist[source] = 0
+
+    H = HeapPQ(dist)
+    print(H.heap_tree)
+    print(H.find_items)
     return [0], 0
 
 
