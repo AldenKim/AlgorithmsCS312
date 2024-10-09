@@ -32,6 +32,8 @@ class HeapPQ:
             self.find_items[i] = i
 
         #then percolate up to make complete tree
+        for i in range(len(distances)-1, -1, -1):
+            self.percolate_upward(i)
 
     def is_empty(self):
         if self.heap_tree:
@@ -40,12 +42,13 @@ class HeapPQ:
 
     def pop_min(self):
         current_min = self.heap_tree[0][0]
-        self.swap(0,-1)
+        self.swap(0,len(self.heap_tree)-1)
 
-        del self.heap_tree[-1]
+        del self.heap_tree[len(self.heap_tree)-1]
         del self.find_items[current_min]
 
         #percolate downward
+        self.percolate_downward(0)
 
         return current_min
 
@@ -58,10 +61,10 @@ class HeapPQ:
 
         if curr_priority > new_priority:
             #percolate upward
-            return
+            self.percolate_upward(i)
         else:
             #percolate downward
-            return
+            self.percolate_downward(i)
 
     def insert(self, key, new_priority):
         self.find_items[key] = len(self.heap_tree)
@@ -69,6 +72,7 @@ class HeapPQ:
         self.heap_tree.append((key, new_priority))
 
         #percolate up
+        self.percolate_upward(len(self.heap_tree)-1)
 
 
     def swap(self, first, second):
@@ -81,3 +85,31 @@ class HeapPQ:
         temp = self.heap_tree[first]
         self.heap_tree[first] = self.heap_tree[second]
         self.heap_tree[second] = temp
+
+    def percolate_upward(self, index):
+        parent_i = index//2
+
+        if parent_i < index and self.heap_tree[parent_i][1] > self.heap_tree[index][1]:
+            self.swap(index, parent_i)
+            self.percolate_upward(parent_i)
+
+    def percolate_downward(self, index):
+        left = index * 2 + 1
+        right = index * 2 + 2
+
+        if left < len(self.heap_tree) and self.heap_tree[left][1] < self.heap_tree[index][1]:
+            change = left
+
+            if (right < len(self.heap_tree) and self.heap_tree[right][1] < self.heap_tree[index][1]
+                and self.heap_tree[right][1] < self.heap_tree[left][1]):
+                change = right
+
+            self.swap(index, change)
+            self.percolate_downward(change)
+
+
+
+
+
+
+
