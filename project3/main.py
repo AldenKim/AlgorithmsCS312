@@ -82,9 +82,10 @@ def main(seed: int, size: int, density: float, noise: float, source: int, target
     print('Path:', path)
     print('Cost:', cost)
     print('Time:', array_time)
+    draw_path(positions, path)
 
     title(f'Cost: {cost}, Heap: {round(heap_time, 4)}, Array: {round(array_time, 4)}')
-    show_plot(block = True)
+    show_plot()
 
 
 if __name__ == '__main__':
@@ -110,7 +111,7 @@ if __name__ == '__main__':
         # As you step through your code, you will see the plot update as you go
         import matplotlib.pyplot as plt
 
-        plt.switch_backend('Qt5Agg')
+        plt.switch_backend('QtAgg')
         plt.ion()
 
     if args.target is None:
