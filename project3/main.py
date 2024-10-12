@@ -71,7 +71,7 @@ def main(seed: int, size: int, density: float, noise: float, source: int, target
     print('Cost:', cost)
     print('Time:', heap_time)
 
-    draw_path(positions, path)
+    draw_path(positions, path, color = "red")
 
     start = time()
     path, cost = find_shortest_path_with_array(weights, source, target)
@@ -82,7 +82,7 @@ def main(seed: int, size: int, density: float, noise: float, source: int, target
     print('Path:', path)
     print('Cost:', cost)
     print('Time:', array_time)
-    draw_path(positions, path)
+    draw_path(positions, path, color = "green")
 
     title(f'Cost: {cost}, Heap: {round(heap_time, 4)}, Array: {round(array_time, 4)}')
     show_plot()
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     # To debug or run in your IDE
     # you can uncomment the lines below and modify the arguments as needed
     import sys
-    sys.argv = ['main.py', '-n', '10', '--seed', '312', '--density', '0.3', '--noise', '0.05']
+    sys.argv = ['main.py', '-n', '100000', '--seed', '312', '--density', '0.0001', '--noise', '0.02', '--source', '2', '--target', '9']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', type=int, help='The number of points to generate', default=10)

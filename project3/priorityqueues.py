@@ -1,4 +1,4 @@
-class ArrayPQ:
+class LinearPQ:
     def __init__(self, distances):
         self.queue = {}
         for i in range(len(distances)):
@@ -16,9 +16,6 @@ class ArrayPQ:
 
     def update_priority(self, key,new_priority):
         self.queue[key] = new_priority
-
-    def insert(self, key, priority):
-        self.queue[key] = priority
 
 
 class HeapPQ:
@@ -53,6 +50,9 @@ class HeapPQ:
         return current_min
 
     def update_priority(self, key, new_priority):
+        if key not in self.find_items:
+            return
+
         i = self.find_items[key]
 
         curr_priority = self.heap_tree[i][1]
@@ -65,15 +65,6 @@ class HeapPQ:
         else:
             #percolate downward
             self.percolate_downward(i)
-
-    def insert(self, key, new_priority):
-        self.find_items[key] = len(self.heap_tree)
-
-        self.heap_tree.append((key, new_priority))
-
-        #percolate up
-        self.percolate_upward(len(self.heap_tree)-1)
-
 
     def swap(self, first, second):
         item1 = self.heap_tree[first][0]
@@ -97,19 +88,16 @@ class HeapPQ:
         left = index * 2 + 1
         right = index * 2 + 2
 
+        change = index
         if left < len(self.heap_tree) and self.heap_tree[left][1] < self.heap_tree[index][1]:
             change = left
 
-            if (right < len(self.heap_tree) and self.heap_tree[right][1] < self.heap_tree[index][1]
-                and self.heap_tree[right][1] < self.heap_tree[left][1]):
-                change = right
+        if (right < len(self.heap_tree) and self.heap_tree[right][1] < self.heap_tree[index][1]
+            and self.heap_tree[right][1] < self.heap_tree[left][1]):
+            change = right
 
-            self.swap(index, change)
-            self.percolate_downward(change)
+        if change == index:
+            return
 
-
-
-
-
-
-
+        self.swap(index, change)
+        self.percolate_downward(change)
