@@ -5,12 +5,10 @@ class LinearPQ:
             self.queue[i] = distances[i]
 
     def is_empty(self):
-        if self.queue:
-            return False
-        return True
+        return len(self.queue) == 0
 
     def pop_min(self):
-        key, priority = min(self.queue.items(), key=lambda item : item[1])
+        key, priority = min(self.queue.items(), key=lambda item: item[1])
         del self.queue[key]
         return key
 

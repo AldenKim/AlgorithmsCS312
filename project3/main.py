@@ -61,27 +61,39 @@ def main(seed: int, size: int, density: float, noise: float, source: int, target
     circle_point(positions[source], c='r')
     circle_point(positions[target], c='b')
 
-    start = time()
+    sumHeap = 0
     path, cost = find_shortest_path_with_heap(weights, source, target)
-    end = time()
-    heap_time = end - start
-    print()
-    print('-- Heap --')
-    print('Path:', path)
-    print('Cost:', cost)
-    print('Time:', heap_time)
+    for i in range(5):
+        start = time()
+        path, cost = find_shortest_path_with_heap(weights, source, target)
+        end = time()
+        heap_time = end - start
+        print()
+        print('-- Heap --')
+        print('Path:', path)
+        print('Cost:', cost)
+        print('Time:', heap_time)
+        sumHeap += heap_time
+
+    print("Avg Time For Heap: " + str(round((sumHeap/5), 11)))
 
     draw_path(positions, path, color = "red")
 
-    start = time()
+    sumArray = 0
     path, cost = find_shortest_path_with_array(weights, source, target)
-    end = time()
-    array_time = end - start
-    print()
-    print('-- Array --')
-    print('Path:', path)
-    print('Cost:', cost)
-    print('Time:', array_time)
+    for i in range(5):
+        start = time()
+        path, cost = find_shortest_path_with_array(weights, source, target)
+        end = time()
+        array_time = end - start
+        print()
+        print('-- Array --')
+        print('Path:', path)
+        print('Cost:', cost)
+        print('Time:', array_time)
+        sumArray += array_time
+
+    print("Avg Time For Array: " + str(round((sumArray/5), 11)))
     draw_path(positions, path, color = "green")
 
     title(f'Cost: {cost}, Heap: {round(heap_time, 4)}, Array: {round(array_time, 4)}')
@@ -92,7 +104,7 @@ if __name__ == '__main__':
     # To debug or run in your IDE
     # you can uncomment the lines below and modify the arguments as needed
     import sys
-    sys.argv = ['main.py', '-n', '100000', '--seed', '312', '--density', '0.0001', '--noise', '0.02', '--source', '2', '--target', '9']
+    sys.argv = ['main.py', '-n', '10000', '--seed', '312', '--density', '1', '--noise', '0.02', '--source', '2', '--target', '9']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', type=int, help='The number of points to generate', default=10)
