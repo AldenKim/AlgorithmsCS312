@@ -27,7 +27,7 @@ def align(seq1: str, seq2: str, match_award=-3, indel_penalty=5,
         for j in range(1, top_size + 1):
             if seq1[i - 1] == seq2[j - 1]:
                 match = matrix[(i - 1, j - 1)] + match_award
-            else:  # Substitution
+            else:
                 match = matrix[(i - 1, j - 1)] + sub_penalty
 
             above = matrix[(i - 1, j)] + indel_penalty
@@ -37,8 +37,31 @@ def align(seq1: str, seq2: str, match_award=-3, indel_penalty=5,
 
     alignment_cost = matrix[(left_size, top_size)]
 
+    alignment_1 = ""
+    alignment_2 = ""
+    i = left_size
+    j = top_size
 
+    while i > 0 or j > 0:
+        current_score = matrix.get((i, j), float('inf'))
 
-    return alignment_cost, None, None
+        if i > 0 and j > 0 and current_score == matrix[(i-1,j-1)] + (match_award if seq1[i-1] == seq2[j-1] else sub_penalty):
+            alignment_1 = seq1[i - 1] + alignment_1
+            alignment_2 = seq2[j - 1] + alignment_2
+            i -= 1
+            j -= 1
+        elif j > 0 and current_score == matrix[(i, j-1)] + indel_penalty:
+            alignment_1 = gap + alignment_1
+            alignment_2 = seq2[j - 1] + alignment_2
+            j -= 1
+        elif i > 0 and current_score == matrix[(i-1, j)] + indel_penalty:
+            alignment_1 = seq1[i - 1] + alignment_1
+            alignment_2 = gap + alignment_2
+            i -= 1
+
+    print(alignment_cost)
+    print(alignment_1)
+    print(alignment_2)
+    return alignment_cost, alignment_1, alignment_2
 
 
