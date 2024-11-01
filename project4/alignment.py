@@ -47,16 +47,21 @@ def align(seq1: str, seq2: str, match_award=-3, indel_penalty=5,
     while i > 0 or j > 0:
         current_score = matrix.get((i, j), float('inf'))
 
-        if i > 0 and j > 0 and current_score == matrix[(i-1,j-1)] + (match_award if seq1[i-1] == seq2[j-1] else sub_penalty):
+        if seq1[i-1] == seq2[j-1]:
+            add_to_diagonal = match_award
+        else:
+            add_to_diagonal = sub_penalty
+
+        if i > 0 and j > 0 and current_score == matrix.get((i-1,j-1), float('inf')) + add_to_diagonal:
             alignment_1 = seq1[i - 1] + alignment_1
             alignment_2 = seq2[j - 1] + alignment_2
             i -= 1
             j -= 1
-        elif j > 0 and current_score == matrix[(i, j-1)] + indel_penalty:
+        elif j > 0 and current_score == matrix.get((i,j-1), float('inf')) + indel_penalty:
             alignment_1 = gap + alignment_1
             alignment_2 = seq2[j - 1] + alignment_2
             j -= 1
-        elif i > 0 and current_score == matrix[(i-1, j)] + indel_penalty:
+        elif i > 0 and current_score == matrix.get((i-1,j), float('inf'))  + indel_penalty:
             alignment_1 = seq1[i - 1] + alignment_1
             alignment_2 = gap + alignment_2
             i -= 1

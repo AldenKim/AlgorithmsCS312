@@ -65,6 +65,7 @@ def test_medium_dna_alignment(align):
 @with_import('alignment')
 @timeout(180)
 def test_large_dna_alignment(align):
+    test_files = Path("D:/ComputerScience/AlgorithmsCS312/project4/test_files")
     seq1 = read_sequence(test_files / 'bovine_coronavirus.txt')[:3000]
     seq2 = read_sequence(test_files / 'murine_hepatitus.txt')[:3000]
 
@@ -82,6 +83,7 @@ def test_large_dna_alignment(align):
 @with_import('alignment')
 @timeout(20)
 def test_large_dna_alignment_banded(align):
+    test_files = Path("D:/ComputerScience/AlgorithmsCS312/project4/test_files")
     seq1 = read_sequence(test_files / 'bovine_coronavirus.txt')[:3000]
     seq2 = read_sequence(test_files / 'murine_hepatitus.txt')[:3000]
 
@@ -99,6 +101,7 @@ def test_large_dna_alignment_banded(align):
 @with_import('alignment')
 @timeout(20)
 def test_massive_dna_alignment_banded(align):
+    test_files = Path("D:/ComputerScience/AlgorithmsCS312/project4/test_files")
     seq1 = read_sequence(test_files / 'bovine_coronavirus.txt')[:31000]
     seq2 = read_sequence(test_files / 'murine_hepatitus.txt')[:31000]
 
