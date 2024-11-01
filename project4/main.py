@@ -8,7 +8,7 @@ def main(seq1: str, seq2: str):
     """
     Align the two sequences and print the score and alignment strings
     """
-    score, alignment1, alignment2 = align(seq1, seq2)
+    score, alignment1, alignment2 = align(seq1, seq2, banded_width = 3)
     print(f'Score: {score}')
     print(alignment1)
     print(alignment2)
