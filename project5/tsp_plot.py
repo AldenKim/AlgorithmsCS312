@@ -3,7 +3,6 @@ import math
 
 import matplotlib.pyplot as plt
 from tsp_core import get_segments, Location, Tour, SolutionStats
-from tsp_solve import ReducedPartialPath
 
 
 def add_axes(func):
@@ -129,26 +128,6 @@ def plot_edge_probability(
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Average fraction of better edges')
     ax.set_ylim([0, ax.get_ylim()[-1]])
-
-
-@add_axes
-def plot_solution_progress(
-        solutions: list[list[int]],
-        edges: list[list[float]],
-        ax=None
-):
-    for solution in solutions:
-        xx = range(len(solution))
-        pp = ReducedPartialPath.create_from_edges(edges, solution[0])
-        yy = [pp.cost]
-
-        for i in range(1, len(solution)):
-            pp = pp._expand_child(solution[i - 1], solution[i])
-            yy.append(pp.cost)
-
-        ax.plot(xx, yy, marker='o')
-        ax.set_xlabel('Node in solution')
-        ax.set_ylabel('Lower bound on partial path')
 
 
 @add_axes
