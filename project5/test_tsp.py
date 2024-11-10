@@ -42,6 +42,6 @@ def test_dfs(dfs):
     assert len(scores) == 1
 
 
-@with_import('tsp_solve')
-def test_branch_and_bound():
-    ...
+#@with_import('tsp_solve')
+#def test_branch_and_bound():
+#    ...

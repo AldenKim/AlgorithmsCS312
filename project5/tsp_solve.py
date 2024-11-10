@@ -54,7 +54,68 @@ def random_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
 
 
 def greedy_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
+    stats = []
+    n_nodes_expanded = 0
+    n_nodes_pruned = 0
+    cut_tree = CutTree(len(edges))
+
+    for i in range(len(edges)):
+        if timer.time_out():
+            return stats
+
+        tour = [i]
+        visited = set()
+        visited.add(i)
+        curr = i
+        total_cost = 0
+
+        while len(tour) < len(edges):
+            next_city = None
+            min_cost = math.inf
+
+            for city, cost in enumerate(edges[curr]):
+                if city not in visited and cost < min_cost:
+                    next_city = city
+                    min_cost = cost
+
+            if next_city is None:
+                n_nodes_pruned += 1
+                cut_tree.cut(tour)
+                break
+
+            tour.append(next_city)
+            visited.add(next_city)
+            total_cost += min_cost
+            n_nodes_expanded += 1
+            curr = next_city
+
+        if len(tour) == len(edges):
+            total_cost += edges[curr][i]
+            if not stats or total_cost < stats[-1].score:
+                stats.append(SolutionStats(
+                    tour = tour,
+                    score = total_cost,
+                    time = timer.time(),
+                    max_queue_size=1,
+                    n_nodes_expanded=n_nodes_expanded,
+                    n_nodes_pruned=n_nodes_pruned,
+                    n_leaves_covered=cut_tree.n_leaves_cut(),
+                    fraction_leaves_covered=cut_tree.fraction_leaves_covered()
+                ))
+
+    if stats:
+        return stats
+    return [SolutionStats(
+            [],
+            math.inf,
+            timer.time(),
+            1,
+            n_nodes_expanded,
+            n_nodes_pruned,
+            cut_tree.n_leaves_cut(),
+            cut_tree.fraction_leaves_covered()
+        )]
+
 
 
 def dfs(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
