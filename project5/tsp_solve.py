@@ -116,14 +116,96 @@ def greedy_tour(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
             cut_tree.fraction_leaves_covered()
         )]
 
-
-
 def dfs(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
+    stats = []
+    n_nodes_expanded = 0
+    n_nodes_pruned = 0
+    cut_tree = CutTree(len(edges))
+
+    best_score = math.inf
+    best_solution = None
+
+    stack = [[0]]
+
+    while stack:
+        if timer.time_out():
+            return stats
+
+        #pop
+        path = stack.pop()
+
+        #expand
+        for next_city in range(len(edges)):
+            if next_city in path:
+                continue
+
+            new_path = path + [next_city]
+
+            if len(new_path) == len(edges):
+                n_nodes_expanded += 1
+
+                tour_cost = score_tour(new_path, edges)
+
+                if tour_cost < best_score:
+                    best_score = tour_cost
+                    best_solution = new_path
+                    stats.append(SolutionStats(
+                        tour = best_solution,
+                        score = best_score,
+                        time = timer.time(),
+                        max_queue_size = len(stack),
+                        n_nodes_expanded = n_nodes_expanded,
+                        n_nodes_pruned = n_nodes_pruned,
+                        n_leaves_covered = cut_tree.n_leaves_cut(),
+                        fraction_leaves_covered = cut_tree.fraction_leaves_covered()))
+                else:
+                    stack.append(new_path)
+            else:
+                stack.append(new_path)
+
+    if best_solution:
+        return stats
+
+    return [SolutionStats(
+            [],
+            math.inf,
+            timer.time(),
+            1,
+            n_nodes_expanded,
+            n_nodes_pruned,
+            cut_tree.n_leaves_cut(),
+            cut_tree.fraction_leaves_covered()
+        )]
 
 
 def branch_and_bound(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
+    stats = []
+    n_nodes_expanded = 0
+    n_nodes_pruned = 0
+    cut_tree = CutTree(len(edges))
+
+    best_score = math.inf
+    best_solution = None
+
+    stack = [[0]]
+
+    while stack:
+        P = stack.pop()
+
+
+
+    if stats:
+        return stats
+    return [SolutionStats(
+            [],
+            math.inf,
+            timer.time(),
+            1,
+            n_nodes_expanded,
+            n_nodes_pruned,
+            cut_tree.n_leaves_cut(),
+            cut_tree.fraction_leaves_covered()
+        )]
 
 
 def branch_and_bound_smart(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:

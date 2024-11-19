@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # To debug or run in your IDE
     # you can uncomment the lines below and modify the arguments as needed
     import sys
-    sys.argv = ['main.py', '-n', '10000', '--seed', '312', '--density', '1', '--noise', '0.02', '--source', '2', '--target', '9']
+    sys.argv = ['main.py', '-n', '10', '--seed', '312', '--density', '1', '--noise', '0.02', '--source', '2', '--target', '9']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', type=int, help='The number of points to generate', default=10)
