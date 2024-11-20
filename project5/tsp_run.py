@@ -62,7 +62,6 @@ def main(n, *find_tours: Solver, timeout=60, **kwargs):
 
     plt.show()
 
-
 if __name__ == '__main__':
     from tsp_solve import (random_tour, greedy_tour, dfs, branch_and_bound, branch_and_bound_smart)
 
@@ -77,5 +76,5 @@ if __name__ == '__main__':
         reduction=0.2,
         normal=False,
         seed=312,
-        timeout=60
+        timeout=15
     )
