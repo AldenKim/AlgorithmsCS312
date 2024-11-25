@@ -138,8 +138,9 @@ def dfs(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
         path = stack.pop(-1)
 
         #expand
+        set_path = set(path)
         for next_city in range(len(edges)):
-            if next_city in path:
+            if next_city in set_path:
                 continue
 
             new_path = path + [next_city]
@@ -194,24 +195,107 @@ def branch_and_bound(edges: list[list[float]], timer: Timer) -> list[SolutionSta
 
     best_score = initial_solution[-1].score
     best_solution = initial_solution[-1].tour
+    stats.append(initial_solution[-1])
 
     initial_reduced, initial_lower = initialize_reduced_cost_matrix({}, edges)
-    """"print(best_score)
-    print(edges)
-    print(temp)
-    print(temp2)
-    print()"""
+
+    stack = [(initial_lower, [0], initial_reduced)]
+
+    while stack:
+        if timer.time_out():
+            return stats
+
+        low_bound, P, reduced_cost_matrix = stack.pop()
+
+        if low_bound > best_score:
+            n_nodes_pruned+=1
+            continue
+
+        if len(P) == len(edges):
+            n_nodes_expanded += 1
+
+            tour_cost = score_tour(P, edges)
+
+            if tour_cost < best_score:
+                best_score = tour_cost
+                best_solution = P
+
+                stats.append(SolutionStats(
+                    tour=best_solution,
+                    score=best_score,
+                    time=timer.time(),
+                    max_queue_size=len(stack),
+                    n_nodes_expanded=n_nodes_expanded,
+                    n_nodes_pruned=n_nodes_pruned,
+                    n_leaves_covered=cut_tree.n_leaves_cut(),
+                    fraction_leaves_covered=cut_tree.fraction_leaves_covered()))
+            continue
+
+        set_path = set(P)
+        for next_city in range(len(edges)):
+            if next_city not in set_path:
+                new_path = P + [next_city]
+
+                #check to see if this new path is infinity
+                if edges[P[-1]][next_city] == math.inf:
+                    n_nodes_pruned += 1
+                    continue
+
+                updated_matrix, new_bound = lower_bound(new_path, edges, reduced_cost_matrix, low_bound, P)
+
+                if new_bound < best_score:
+                    stack.append((new_bound, new_path, updated_matrix))
+                else:
+                    n_nodes_pruned += 1
+                    cut_tree.cut(P + [next_city])
+                    continue
+
+        #print(pq)
+    if best_solution:
+        return stats
+
+    return [SolutionStats(
+            [],
+            math.inf,
+            timer.time(),
+            1,
+            n_nodes_expanded,
+            n_nodes_pruned,
+            cut_tree.n_leaves_cut(),
+            cut_tree.fraction_leaves_covered()
+        )]
+
+
+def branch_and_bound_smart(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
+    stats = []
+    n_nodes_expanded = 0
+    n_nodes_pruned = 0
+    cut_tree = CutTree(len(edges))
+
+    initial_solution = greedy_tour(edges, timer)
+    if not initial_solution:
+        return [SolutionStats(
+            [], math.inf, timer.time(), 1, 0, 0, 0, 0
+        )]
+
+    best_score = initial_solution[-1].score
+    best_solution = initial_solution[-1].tour
+
+    initial_reduced, initial_lower = initialize_reduced_cost_matrix({}, edges)
 
     pq = []
-    heapq.heappush(pq, (initial_lower, [0], initial_reduced))
+    heapq.heappush(pq, (-1, initial_lower, [0], initial_reduced))
 
     while pq:
         if timer.time_out():
             return stats
 
-        low_bound, P, reduced_cost_matrix = heapq.heappop(pq)
-        #print(P)
-        #print(low_bound)
+        _, low_bound, P, reduced_cost_matrix = heapq.heappop(pq)
+
+        if low_bound > best_score:
+            n_nodes_pruned += 1
+            continue
+
         if len(P) == len(edges):
             n_nodes_expanded += 1
 
@@ -230,37 +314,41 @@ def branch_and_bound(edges: list[list[float]], timer: Timer) -> list[SolutionSta
                     n_nodes_pruned=n_nodes_pruned,
                     n_leaves_covered=cut_tree.n_leaves_cut(),
                     fraction_leaves_covered=cut_tree.fraction_leaves_covered()))
+            continue
 
+        set_path = set(P)
         for next_city in range(len(edges)):
-            if next_city not in P:
+            if next_city not in set_path:
                 new_path = P + [next_city]
-                updated_matrix, new_bound = lower_bound(new_path, edges, reduced_cost_matrix, low_bound)
-                #print(new_path)
-                #print(new_bound)
+
+                # check to see if this new path is infinity
+                if edges[P[-1]][next_city] == math.inf:
+                    n_nodes_pruned += 1
+                    continue
+
+                updated_matrix, new_bound = lower_bound(new_path, edges, reduced_cost_matrix, low_bound, P)
+
                 if new_bound < best_score:
-                    heapq.heappush(pq, (new_bound, new_path, updated_matrix))
+                    heapq.heappush(pq, (-len(new_path), new_bound, new_path, updated_matrix))
                 else:
                     n_nodes_pruned += 1
                     cut_tree.cut(P + [next_city])
-        #print(pq)
+                    continue
+
+        # print(pq)
     if best_solution:
         return stats
 
     return [SolutionStats(
-            [],
-            math.inf,
-            timer.time(),
-            1,
-            n_nodes_expanded,
-            n_nodes_pruned,
-            cut_tree.n_leaves_cut(),
-            cut_tree.fraction_leaves_covered()
-        )]
-
-
-def branch_and_bound_smart(edges: list[list[float]], timer: Timer) -> list[SolutionStats]:
-    return []
-
+        [],
+        math.inf,
+        timer.time(),
+        1,
+        n_nodes_expanded,
+        n_nodes_pruned,
+        cut_tree.n_leaves_cut(),
+        cut_tree.fraction_leaves_covered()
+    )]
 
 #REDUCES ROWS
 def reduce_rows(reduced_cost_matrix: dict, len1: int, len2: int):
@@ -271,14 +359,13 @@ def reduce_rows(reduced_cost_matrix: dict, len1: int, len2: int):
             if reduced_cost_matrix.get((i, j), math.inf) < minimum_value:
                 minimum_value = reduced_cost_matrix[(i, j)]
 
-        if minimum_value == 0 or minimum_value == math.inf:
+        if minimum_value == 0:
             continue
         for j in range(len2):
             if reduced_cost_matrix.get((i, j), math.inf) != math.inf:
                 reduced_cost_matrix[(i, j)] -= minimum_value
 
-        if minimum_value != math.inf:
-            curr_lower_bound += minimum_value
+        curr_lower_bound += minimum_value
 
     return reduced_cost_matrix, curr_lower_bound
 
@@ -291,14 +378,13 @@ def reduce_col (reduced_cost_matrix: dict, len1: int, len2: int):
             if reduced_cost_matrix.get((i, j), math.inf) < minimum_value:
                 minimum_value = reduced_cost_matrix[(i, j)]
 
-        if minimum_value == 0 or minimum_value == math.inf:
+        if minimum_value == 0:
             continue
         for i in range(len2):
             if reduced_cost_matrix.get((i, j), math.inf) != math.inf:
                 reduced_cost_matrix[(i, j)] -= minimum_value
 
-        if minimum_value != math.inf:
-            curr_lower_bound += minimum_value
+        curr_lower_bound += minimum_value
 
     return reduced_cost_matrix, curr_lower_bound
 
@@ -309,6 +395,8 @@ def initialize_reduced_cost_matrix(reduced_cost_matrix, edges):
         for j in range(len(edges[i])):
             if edges[i][j] < math.inf:
                 reduced_cost_matrix[(i,j)] = edges[i][j]
+            if i == j:
+                reduced_cost_matrix[(i, j)] = math.inf
 
     #lowering the rows
     reduced_cost_matrix, curr_lower_bound = reduce_rows(reduced_cost_matrix, len(edges), len(edges[0]))
@@ -319,11 +407,14 @@ def initialize_reduced_cost_matrix(reduced_cost_matrix, edges):
     return reduced_cost_matrix, curr_lower_bound + temp
 
 #Finds lower bound
-def lower_bound(p_i, edges, reduced_cost_matrix, prev_bound):
+def lower_bound(p_i, edges, reduced_cost_matrix, prev_bound, path):
     n = len(edges)
 
+    #partial_cost = sum(edges[p_i[i - 1]][p_i[i]] for i in range(1, len(p_i)))
+
+    ##probably slowing down here
     x, y = p_i[-2], p_i[-1]
-    partial_cost = sum(edges[p_i[i - 1]][p_i[i]] for i in range(1, len(p_i)))
+    remaining_path_cost = reduced_cost_matrix.get((x,y), math.inf)
 
     updated = reduced_cost_matrix.copy()
 
@@ -331,7 +422,52 @@ def lower_bound(p_i, edges, reduced_cost_matrix, prev_bound):
         updated.pop((x, i), None)
         updated.pop((i, y), None)
 
-    updated, curr_lower_bound = reduce_rows(updated, n, n)
-    updated, temp = reduce_col(updated, n, n)
-    return updated, partial_cost + curr_lower_bound + temp
+    updated.pop((x,y), None)
+    updated.pop((y, x), None)
+
+    updated, curr_lower_bound = reduce_rows_lower(updated, n, n, set(path))
+    updated, temp2 = reduce_col_low(updated, n, n,set(p_i[1:]))
+    ##UPDATING MATRIX
+
+    return updated, prev_bound + (curr_lower_bound + temp2) + remaining_path_cost
+
+def reduce_rows_lower(reduced_cost_matrix: dict, len1: int, len2: int, p):
+    curr_lower_bound = 0
+    for i in range(len1):
+        if i in p:
+            continue
+        minimum_value = math.inf
+        for j in range(len2):
+            if reduced_cost_matrix.get((i, j), math.inf) < minimum_value:
+                minimum_value = reduced_cost_matrix[(i, j)]
+
+        if minimum_value == 0:
+            continue
+        for j in range(len2):
+            if reduced_cost_matrix.get((i, j), math.inf) != math.inf:
+                reduced_cost_matrix[(i, j)] -= minimum_value
+
+        curr_lower_bound += minimum_value
+
+    return reduced_cost_matrix, curr_lower_bound
+
+def reduce_col_low(reduced_cost_matrix: dict, len1: int, len2: int, p):
+    curr_lower_bound = 0
+    for j in range(len1):
+        if j in p:
+            continue
+        minimum_value = math.inf
+        for i in range(len2):
+            if reduced_cost_matrix.get((i, j), math.inf) < minimum_value:
+                minimum_value = reduced_cost_matrix[(i, j)]
+
+        if minimum_value == 0:
+            continue
+        for i in range(len2):
+            if reduced_cost_matrix.get((i, j), math.inf) != math.inf:
+                reduced_cost_matrix[(i, j)] -= minimum_value
+
+        curr_lower_bound += minimum_value
+
+    return reduced_cost_matrix, curr_lower_bound
 

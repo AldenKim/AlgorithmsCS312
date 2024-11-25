@@ -67,14 +67,10 @@ if __name__ == '__main__':
 
     main(
         15,
-        random_tour,
-        greedy_tour,
-        dfs,
-        branch_and_bound,
-        branch_and_bound_smart,
+        greedy_tour, dfs, branch_and_bound,
         euclidean=True,
         reduction=0.2,
         normal=False,
         seed=312,
-        timeout=30
+        timeout=60
     )
