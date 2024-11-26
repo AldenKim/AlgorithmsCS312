@@ -396,7 +396,7 @@ def initialize_reduced_cost_matrix(reduced_cost_matrix, edges):
             if edges[i][j] < math.inf:
                 reduced_cost_matrix[(i,j)] = edges[i][j]
             if i == j:
-                reduced_cost_matrix[(i, j)] = math.inf
+                reduced_cost_matrix.pop((i, j), None)
 
     #lowering the rows
     reduced_cost_matrix, curr_lower_bound = reduce_rows(reduced_cost_matrix, len(edges), len(edges[0]))
